@@ -13,6 +13,8 @@ $RECYCLE.BIN/
 bin
 obj
 x64
+Debug
+Release
 .vs
 ipch
 *.opendb
