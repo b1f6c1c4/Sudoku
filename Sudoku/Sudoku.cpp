@@ -7,7 +7,12 @@ int main()
     {
         Grid g;
         std::cin >> g;
+        g.LoadAscendings(std::cin);
+
         g.Reduce();
+        g.Update();
+        g.Reduce();
+
         std::cout << g;
     }
     system("pause");

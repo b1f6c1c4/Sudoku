@@ -32,7 +32,10 @@
     <ClCompile Include="Sudoku.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Grid.cpp">
+    <ClCompile Include="Cover.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Ascending.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

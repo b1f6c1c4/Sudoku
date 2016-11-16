@@ -56,6 +56,11 @@ bool Grid::Set(int x, int y, num_t value)
     if (!Set(m_Blks[y / M][x / M], (y % M) * M + (x % M), value))
         return m_Valid = false;
 
+    if (!Set(m_Rows[y], m_RowA[y], x, value))
+        return m_Valid = false;
+    if (!Set(m_Cols[x], m_ColA[x], y, value))
+        return m_Valid = false;
+
     return true;
 }
 
@@ -87,6 +92,13 @@ bool Grid::Reduce(int x, int y)
         filled[i] |= m_Cols[x].Filled[i];
     for (auto i = 0; i < N; i++)
         filled[i] |= m_Blks[y / M][x / M].Filled[i];
+
+    if (!m_RowA[y].Solutions.empty())
+        for (auto i = 0; i < N; i++)
+            filled[i] |= m_RowA[y].Probs[x][i] == 0;
+    if (!m_ColA[y].Solutions.empty())
+        for (auto i = 0; i < N; i++)
+            filled[i] |= m_ColA[y].Probs[x][i] == 0;
 
     auto number = 0;
     for (auto i = 0; i < N; i++)
