@@ -43,8 +43,11 @@ void Ascending::UpdateProbs()
                   });
 }
 
-std::istream &Grid::LoadAscendings(std::istream &is)
+bool Grid::LoadAscendings(std::istream &is)
 {
+    if (!m_Valid)
+        return false;
+
     for (auto i = 0; i < N; i++)
         is >> m_RowA[i].PosConstriant;
     for (auto i = 0; i < N; i++)
@@ -55,17 +58,58 @@ std::istream &Grid::LoadAscendings(std::istream &is)
         is >> m_ColA[i].NegConstriant;
 
     for (auto i = 0; i < N; i++)
-        m_RowA[i].Init();
+        if (!Init(m_Rows[i], m_RowA[i]))
+            return false;
     for (auto i = 0; i < N; i++)
-        m_ColA[i].Init();
+        if (!Init(m_Cols[i], m_ColA[i]))
+            return false;
 
-    return is;
+    return true;
 }
 
-bool Grid::Set(Cover &cover, Ascending &asc, int ref, int value)
+bool Grid::Init(Cover &cover, Ascending &asc)
 {
-    if (!asc.Set(ref, value))
+    if (asc.PosConstriant + asc.NegConstriant > N + 1)
         return false;
+
+    if (asc.PosConstriant == N)
+    {
+        for (auto j = 0; j < N; j++)
+            if (!Set(cover.Ref[j], j + 1))
+                return false;
+        return true;
+    }
+
+    if (asc.NegConstriant == N)
+    {
+        for (auto j = 0; j < N; j++)
+            if (!Set(cover.Ref[N - j], j + 1))
+                return false;
+        return true;
+    }
+
+    if (asc.PosConstriant + asc.NegConstriant == N + 1)
+        return Set(cover.Ref[asc.PosConstriant], N);
+
+    if (asc.PosConstriant == 1)
+    {
+        if (!Set(cover.Ref[0], N))
+            return false;
+        if (asc.NegConstriant == 0)
+            return true;
+        asc.Init();
+        return true;
+    }
+
+    if (asc.NegConstriant == 1)
+    {
+        if (!Set(cover.Ref[N - 1], N))
+            return false;
+        if (asc.PosConstriant == 0)
+            return true;
+        asc.Init();
+        return true;
+    }
 
     return true;
 }
@@ -175,6 +219,10 @@ bool Grid::Update(Cover &cover, Ascending &asc)
 
         if (asc.Solutions.empty())
             return asc.Valid = false;
+    }
+    else
+    {
+
     }
 
     return true;

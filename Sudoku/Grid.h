@@ -39,7 +39,8 @@ class Grid sealed
 public:
     Grid();
 
-    std::istream &LoadAscendings(std::istream &is);
+    bool LoadGrid(std::istream &is);
+    bool LoadAscendings(std::istream &is);
 
     int Get(int p) const;
     int Get(int x, int y) const;
@@ -67,11 +68,10 @@ private:
     bool m_Valid;
 
     bool Set(Cover &cover, int ref, int value);
-    bool Set(Cover &cover, Ascending &asc, int ref, int value);
 
+    bool Init(Cover &cover, Ascending &asc);
     bool Update(Cover &cover, Ascending &asc);
     void Fill(Cover &cover, Ascending &asc);
 };
 
-std::istream &operator>>(std::istream &is, Grid &grid);
 std::ostream &operator<<(std::ostream &os, const Grid &grid);

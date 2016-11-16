@@ -6,7 +6,7 @@ int main()
     while (true)
     {
         Grid g;
-        std::cin >> g;
+        g.LoadGrid(std::cin);
         g.LoadAscendings(std::cin);
 
         g.Reduce();

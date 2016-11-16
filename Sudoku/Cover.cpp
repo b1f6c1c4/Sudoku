@@ -20,6 +20,20 @@ Grid::Grid() : m_Data{0}, m_Valid(true)
                     m_Blks[i][j].Ref[p * M + q] = (i * M + p) * N + (j * M + q);
 }
 
+bool Grid::LoadGrid(std::istream &is)
+{
+    int value;
+    for (auto i = 0; i < N; i++)
+        for (auto j = 0; j < N; j++)
+        {
+            is >> value;
+            if (value != 0)
+                Set(j, i, value);
+        }
+
+    return m_Valid;
+}
+
 int Grid::Get(int p) const
 {
     return Get(p % N, p / N);
@@ -56,9 +70,9 @@ bool Grid::Set(int x, int y, num_t value)
     if (!Set(m_Blks[y / M][x / M], (y % M) * M + (x % M), value))
         return m_Valid = false;
 
-    if (!Set(m_Rows[y], m_RowA[y], x, value))
+    if (!m_RowA[y].Set(x, value))
         return m_Valid = false;
-    if (!Set(m_Cols[x], m_ColA[x], y, value))
+    if (!m_ColA[x].Set(y, value))
         return m_Valid = false;
 
     return true;
@@ -188,19 +202,6 @@ bool Grid::Set(Cover &cover, int ref, int value)
     }
 
     return true;
-}
-
-std::istream &operator>>(std::istream &is, Grid &grid)
-{
-    int value;
-    for (auto i = 0; i < N; i++)
-        for (auto j = 0; j < N; j++)
-        {
-            is >> value;
-            if (value != 0)
-                grid.Set(j, i, value);
-        }
-    return is;
 }
 
 std::ostream &operator<<(std::ostream &os, const Grid &grid)
