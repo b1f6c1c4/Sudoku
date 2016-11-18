@@ -25,8 +25,6 @@ struct Ascending
     int PosConstriant;
     int NegConstriant;
 
-    arrN_t Val;
-
     bool Valid;
     bool Done;
 

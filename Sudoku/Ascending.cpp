@@ -5,7 +5,7 @@ arrN<arrNN<size_t>> SimulatorResultOnePos;
 arrN<arrNN<size_t>> SimulatorResultOneNeg;
 arrNN<arrNN<size_t>> SimulatorResultTwo;
 
-Ascending::Ascending() : PosConstriant(0), NegConstriant(0), Val{0}, Valid(true), Done(true), HasProbs(false) { }
+Ascending::Ascending() : PosConstriant(0), NegConstriant(0), Valid(true), Done(true), HasProbs(false) { }
 
 void Ascending::Init()
 {
@@ -19,9 +19,6 @@ bool Ascending::Set(int ref, int value)
 
     if (Done)
         return true;
-
-    ASSERT(Val[ref] == 0);
-    Val[ref] = value;
 
     if (Solutions.empty())
         return true;
@@ -87,34 +84,34 @@ void Grid::WriteGrid(std::ostream &os) const
 void Grid::WriteAscendings(std::ostream &os) const
 {
     auto LCre = [this](const Cover &cover)
-    {
-        auto val = 0;
-        auto lv = 0;
+        {
+            auto val = 0;
+            auto lv = 0;
 
-        for (auto i = 0; i < N; i++)
-            if (Get(cover.Ref[i]) > val)
-            {
-                lv++;
-                val = Get(cover.Ref[i]);
-            }
+            for (auto i = 0; i < N; i++)
+                if (Get(cover.Ref[i]) > val)
+                {
+                    lv++;
+                    val = Get(cover.Ref[i]);
+                }
 
-        return lv;
-    };
+            return lv;
+        };
 
     auto RCre = [this](const Cover &cover)
-    {
-        auto val = 0;
-        auto rv = 0;
+        {
+            auto val = 0;
+            auto rv = 0;
 
-        for (auto i = N - 1; i >= 0; i--)
-            if (Get(cover.Ref[i]) > val)
-            {
-                rv++;
-                val = Get(cover.Ref[i]);
-            }
+            for (auto i = N - 1; i >= 0; i--)
+                if (Get(cover.Ref[i]) > val)
+                {
+                    rv++;
+                    val = Get(cover.Ref[i]);
+                }
 
-        return rv;
-    };
+            return rv;
+        };
 
     for (auto i = 0; i < N; i++)
         os << LCre(m_Rows[i]) << "  ";
@@ -189,7 +186,7 @@ bool Grid::Update()
     return true;
 }
 
-void Fill(arrN<bool> filled, std::vector<arrN_t> &solutions, arrN<num_t> state, int index, std::function<bool(arrN_t &)> pred)
+void Fill(arrN<bool> filled, std::vector<arrN_t> &solutions, arrN_t state, int index, std::function<bool(arrN_t &)> pred)
 {
     auto indexX = N;
     for (auto i = index + 1; i < N; i++)
@@ -217,7 +214,7 @@ void Fill(arrN<bool> filled, std::vector<arrN_t> &solutions, arrN<num_t> state, 
 
 void Grid::Fill(Cover &cover, Ascending &asc)
 {
-    arrN<num_t> state;
+    arrN_t state;
 
     auto index = N;
 

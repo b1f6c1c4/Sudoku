@@ -41,7 +41,7 @@ void SequentialFill(arrN_t &arr)
 
 bool Tick(arrN_t &arr)
 {
-    arrN<bool> co = { false };
+    arrN<bool> co = {false};
 
     auto i = 0;
     for (; i < N; i++)
