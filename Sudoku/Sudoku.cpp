@@ -2,6 +2,7 @@
 #include "Grid.h"
 #include <fstream>
 #include <sstream>
+#include "Searcher.h"
 
 int main()
 {
@@ -23,7 +24,7 @@ int main()
 
     while (true)
     {
-        Grid g;
+        auto g = std::make_shared<Grid>();
 
 
 #ifdef _DEBUG
@@ -46,22 +47,21 @@ int main()
 )");
         std::string str;
         ss >> str;
-        g.LoadGrid(ss);
+        g->LoadGrid(ss);
         ss >> str;
-        g.LoadAscendings(ss);
+        g->LoadAscendings(ss);
 #else
-        g.LoadGrid(std::cin);
-        g.LoadAscendings(std::cin);
+        g->LoadGrid(std::cin);
+        g->LoadAscendings(std::cin);
 #endif
 
-        if (!g.FullSimplify())
+        g = Searcher::Search(g);
+
+        if (g == nullptr)
             std::cout << "Invalid grid.";
         else
-        {
-            std::cout << g;
-            auto p = g.Suggestion();
-            std::cout << std::get<0>(p) << " " << std::get<1>(p) << " " << std::get<2>(p) << std::endl;
-        }
+            std::cout << *g;
+
 #ifdef _DEBUG
         break;
 #endif

@@ -42,6 +42,7 @@ class Grid sealed
 {
 public:
     Grid();
+    Grid(const Grid &other);
 
     bool LoadGrid(std::istream &is);
     bool LoadAscendings(std::istream &is);
@@ -53,11 +54,11 @@ public:
 
     std::tuple<int, int, num_t> Suggestion() const;
 
-    bool Invalidate(int p, num_t value);
-    bool Invalidate(int x, int y, num_t value);
-
     bool IsValid() const;
+    bool IsDone() const;
 
+    bool Apply(std::tuple<int, int, num_t> sugg);
+    bool Invalidate(std::tuple<int, int, num_t> sugg);
 private:
     arrNN<num_t> m_Data;
 
@@ -77,6 +78,9 @@ private:
     int m_Done;
 
     std::tuple<int, int, num_t> m_Suggested;
+
+    bool Invalidate(int p, num_t value);
+    bool Invalidate(int x, int y, num_t value);
 
     bool Set(int p, num_t value);
     bool Set(int x, int y, num_t value);

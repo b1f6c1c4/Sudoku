@@ -3,7 +3,7 @@
 
 Cover::Cover() : Number(0), Filled{false}, Valid(true) { }
 
-Grid::Grid() : m_Data{0}, m_Number{0}, m_Filled{{false}}, m_Dirty(false), m_Valid(true), m_Done(0)
+Grid::Grid() : m_Data{0}, m_Number{0}, m_Filled{{false}}, m_Probs(nullptr), m_Dirty(false), m_Valid(true), m_Done(0)
 {
     for (auto i = 0; i < N; i++)
         for (auto j = 0; j < N; j++)
@@ -19,6 +19,8 @@ Grid::Grid() : m_Data{0}, m_Number{0}, m_Filled{{false}}, m_Dirty(false), m_Vali
                 for (auto q = 0; q < M; q++)
                     m_Blks[i][j].Ref[p * M + q] = (i * M + p) * N + (j * M + q);
 }
+
+Grid::Grid(const Grid &other) : m_Data(other.m_Data), m_Rows(other.m_Rows), m_Cols(other.m_Cols), m_Blks(other.m_Blks), m_RowA(other.m_RowA), m_ColA(other.m_ColA), m_Number(other.m_Number), m_Filled(other.m_Filled), m_Probs(nullptr), m_Dirty(true), m_Valid(other.m_Valid), m_Done(other.m_Done) { }
 
 bool Grid::LoadGrid(std::istream &is)
 {
@@ -299,6 +301,21 @@ bool Grid::Reduce(int x, int y)
 bool Grid::IsValid() const
 {
     return m_Valid;
+}
+
+bool Grid::IsDone() const
+{
+    return m_Done == N * N;
+}
+
+bool Grid::Apply(std::tuple<int, int, num_t> sugg)
+{
+    return Set(std::get<0>(sugg), std::get<1>(sugg), std::get<2>(sugg));
+}
+
+bool Grid::Invalidate(std::tuple<int, int, num_t> sugg)
+{
+    return Invalidate(std::get<0>(sugg), std::get<1>(sugg), std::get<2>(sugg));
 }
 
 bool Grid::Set(Cover &cover, int ref, int value)
