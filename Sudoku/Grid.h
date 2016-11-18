@@ -48,10 +48,13 @@ public:
 
     int Get(int p) const;
     int Get(int x, int y) const;
-    bool Set(int p, num_t value);
-    bool Set(int x, int y, num_t value);
 
     bool FullSimplify();
+
+    std::tuple<int, int, num_t> Suggestion() const;
+
+    bool Invalidate(int p, num_t value);
+    bool Invalidate(int x, int y, num_t value);
 
     bool IsValid() const;
 
@@ -71,6 +74,12 @@ private:
     bool m_Dirty;
 
     bool m_Valid;
+    int m_Done;
+
+    std::tuple<int, int, num_t> m_Suggested;
+
+    bool Set(int p, num_t value);
+    bool Set(int x, int y, num_t value);
 
     bool ReduceInf();
     bool Reduce();

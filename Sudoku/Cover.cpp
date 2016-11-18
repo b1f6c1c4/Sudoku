@@ -3,7 +3,7 @@
 
 Cover::Cover() : Number(0), Filled{false}, Valid(true) { }
 
-Grid::Grid() : m_Data{0}, m_Number{0}, m_Filled{{false}}, m_Dirty(false), m_Valid(true)
+Grid::Grid() : m_Data{0}, m_Number{0}, m_Filled{{false}}, m_Dirty(false), m_Valid(true), m_Done(0)
 {
     for (auto i = 0; i < N; i++)
         for (auto j = 0; j < N; j++)
@@ -63,10 +63,8 @@ bool Grid::Set(int x, int y, num_t value)
     else
         return m_Valid = false;
 
-    ASSERT(!m_Filled[y][x][value - 1]);
-    m_Filled[y][x][value - 1] = true;
-    ASSERT(m_Number[y][x] != N);
-    m_Number[y][x]++;
+    ASSERT(m_Done != N * N);
+    m_Done++;
 
     m_Dirty = true;
 
@@ -90,13 +88,142 @@ bool Grid::FullSimplify()
     if (!ReduceInf())
         return false;
 
-    if (!Update())
+    while (true)
+    {
+        if (!Update())
+            return false;
+
+        if (!Reduce())
+            return false;
+
+        if (!m_Dirty)
+            break;
+
+        if (!ReduceInf())
+            return false;
+    }
+
+    arrNN<size_t> rowA = {{0}};
+    arrNN<size_t> colA = {{0}};
+    for (auto i = 0; i < N; i++)
+    {
+        if (m_RowA[i].Done)
+            continue;
+        for (auto j = 0; j < N; j++)
+            for (auto k = 0; k < N; k++)
+                rowA[i][j] += m_RowA[i].Probs[j][k];
+    }
+    for (auto i = 0; i < N; i++)
+    {
+        if (m_ColA[i].Done)
+            continue;
+        for (auto j = 0; j < N; j++)
+            for (auto k = 0; k < N; k++)
+                colA[i][j] += m_ColA[i].Probs[j][k];
+    }
+
+    int bestX, bestY;
+    num_t bestV;
+    auto bestP = 0.0;
+
+    m_Probs = std::make_unique<arrNN<arrN<double>>>();
+
+    for (auto j = 0; j < N; j++)
+        for (auto i = 0; i < N; i++)
+        {
+            if (m_Data[j][i] != 0)
+                continue;
+
+            for (auto k = 0; k < N; k++)
+            {
+                if (m_Filled[j][i][k])
+                    continue;
+
+                auto prob = 1.0;
+                prob /= N - m_Rows[j].Number;
+                prob /= N - m_Cols[j].Number;
+                prob /= N - m_Blks[j / M][i / M].Number;
+                if (!m_RowA[i].Done)
+                {
+                    prob *= m_RowA[i].Probs[j][k];
+                    prob /= rowA[i][j];
+                }
+                if (!m_ColA[j].Done)
+                {
+                    prob *= m_ColA[j].Probs[i][k];
+                    prob /= colA[j][i];
+                }
+
+                (*m_Probs)[j][i][k] = prob;
+
+                if (prob > bestP)
+                {
+                    bestX = i;
+                    bestY = j;
+                    bestV = k + 1;
+                    bestP = prob;
+                }
+            }
+        }
+
+    m_Suggested = std::make_tuple(bestX, bestY, bestV);
+
+    return true;
+}
+
+std::tuple<int, int, num_t> Grid::Suggestion() const
+{
+    if (!m_Valid)
+        return std::make_tuple(N, N, 0);
+
+    if (m_Done == N * N)
+        return std::make_tuple(0, 0, 0);
+
+    return m_Suggested;
+}
+
+bool Grid::Invalidate(int p, num_t value)
+{
+    return Invalidate(p % N, p / N, value);
+}
+
+bool Grid::Invalidate(int x, int y, num_t value)
+{
+    if (!m_Valid)
         return false;
 
-    if (!ReduceInf())
+    if (!m_Filled[y][x][value - 1])
+        return true;
+
+    m_Dirty = true;
+
+    m_Filled[y][x][value - 1] = true;
+
+    ASSERT(m_Number[y][x] != N);
+    m_Number[y][x]++;
+
+    if (m_Number[y][x] == N)
         return false;
 
-    // TODO: calculate probs
+    if (m_Number[y][x] == N - 1)
+    {
+        auto flag = false;
+        for (auto i = 0; i < N; i++)
+            if (!m_Filled[y][x][i])
+            {
+                ASSERT(!flag);
+                flag = true;
+
+                if (!Set(x, y, i + 1))
+                    return false;
+
+#ifndef _DEBUG
+                break;
+#endif
+            }
+
+        ASSERT(flag);
+    }
 
     return true;
 }
@@ -137,7 +264,7 @@ bool Grid::Reduce(int x, int y)
             m_Filled[y][x][i] |= m_RowA[y].Probs[x][i] == 0;
     if (!m_ColA[y].Solutions.empty())
         for (auto i = 0; i < N; i++)
-            m_Filled[y][x][i] |= m_ColA[y].Probs[x][i] == 0;
+            m_Filled[y][x][i] |= m_ColA[x].Probs[y][i] == 0;
 
     auto number = 0;
     for (auto i = 0; i < N; i++)
@@ -185,6 +312,17 @@ bool Grid::Set(Cover &cover, int ref, int value)
     ASSERT(cover.Number < N);
     cover.Filled[value - 1] = true;
     cover.Number++;
+
+    for (auto i = 0; i < N; i++)
+    {
+        auto x = cover.Ref[i] % N, y = cover.Ref[i] / N;
+
+        if (m_Filled[y][x][value - 1])
+            continue;
+        m_Filled[y][x][value - 1] = true;
+        ASSERT(m_Number[y][x] != N);
+        m_Number[y][x]++;
+    }
 
     if (cover.Number == N - 1)
     {

@@ -113,6 +113,7 @@ bool Grid::Init(Cover &cover, Ascending &asc)
         return true;
     }
 
+    asc.Init();
     return true;
 }
 
