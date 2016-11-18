@@ -41,7 +41,6 @@ class Grid sealed
 {
 public:
     Grid();
-    Grid(const Grid &other);
 
     bool LoadGrid(std::istream &is);
     bool LoadAscendings(std::istream &is);
@@ -73,7 +72,6 @@ private:
 
     arrNN<int> m_Number;
     arrNN<arrN<bool>> m_Filled;
-    std::unique_ptr<arrNN<arrN<double>>> m_Probs;
     bool m_Dirty;
 
     bool m_Valid;

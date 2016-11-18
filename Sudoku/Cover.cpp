@@ -3,7 +3,7 @@
 
 Cover::Cover() : Number(0), Filled{false}, Valid(true) { }
 
-Grid::Grid() : m_Data{0}, m_Number{0}, m_Filled{{false}}, m_Probs(nullptr), m_Dirty(false), m_Valid(true), m_Done(0)
+Grid::Grid() : m_Data{0}, m_Number{0}, m_Filled{{false}}, m_Dirty(false), m_Valid(true), m_Done(0)
 {
     for (auto i = 0; i < N; i++)
         for (auto j = 0; j < N; j++)
@@ -19,8 +19,6 @@ Grid::Grid() : m_Data{0}, m_Number{0}, m_Filled{{false}}, m_Probs(nullptr), m_Di
                 for (auto q = 0; q < M; q++)
                     m_Blks[i][j].Ref[p * M + q] = (i * M + p) * N + (j * M + q);
 }
-
-Grid::Grid(const Grid &other) : m_Data(other.m_Data), m_Rows(other.m_Rows), m_Cols(other.m_Cols), m_Blks(other.m_Blks), m_RowA(other.m_RowA), m_ColA(other.m_ColA), m_Number(other.m_Number), m_Filled(other.m_Filled), m_Probs(nullptr), m_Dirty(true), m_Valid(other.m_Valid), m_Done(other.m_Done) { }
 
 bool Grid::LoadGrid(std::istream &is)
 {
@@ -136,8 +134,6 @@ bool Grid::EstimateProbs()
     num_t bestV = 0;
     auto bestP = 0.0;
 
-    m_Probs = std::make_unique<arrNN<arrN<double>>>();
-
     for (auto j = 0; j < N; j++)
         for (auto i = 0; i < N; i++)
         {
@@ -167,8 +163,6 @@ bool Grid::EstimateProbs()
                     prob *= m_ColA[j].Probs[i][k];
                     prob /= colA[j][i];
                 }
-
-                (*m_Probs)[j][i][k] = prob;
 
                 if (prob > bestP)
                 {
