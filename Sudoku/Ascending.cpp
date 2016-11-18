@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "Grid.h"
 
+array1<array2<size_t, N, N>, N> SimulatorResultOnePos;
+array1<array2<size_t, N, N>, N> SimulatorResultOneNeg;
+array2<array2<size_t, N, N>, N, N> SimulatorResultTwo;
+
 Ascending::Ascending() : PosConstriant(0), NegConstriant(0), Val{0}, Valid(true), Done(false) { }
 
 void Ascending::Init()
@@ -89,14 +93,13 @@ bool Grid::Init(Cover &cover, Ascending &asc)
     }
 
     if (asc.PosConstriant + asc.NegConstriant == N + 1)
-        return Set(cover.Ref[asc.PosConstriant], N);
+        return Set(cover.Ref[asc.PosConstriant - 1], N);
 
     if (asc.PosConstriant == 1)
     {
         if (!Set(cover.Ref[0], N))
             return false;
-        if (asc.NegConstriant == 0)
-            return true;
+        asc.PosConstriant = 0;
         asc.Init();
         return true;
     }
@@ -105,8 +108,7 @@ bool Grid::Init(Cover &cover, Ascending &asc)
     {
         if (!Set(cover.Ref[N - 1], N))
             return false;
-        if (asc.PosConstriant == 0)
-            return true;
+        asc.NegConstriant = 0;
         asc.Init();
         return true;
     }
@@ -220,9 +222,17 @@ bool Grid::Update(Cover &cover, Ascending &asc)
         if (asc.Solutions.empty())
             return asc.Valid = false;
     }
-    else
+    else if (asc.PosConstriant != 0 && asc.NegConstriant != 0)
     {
-
+        asc.Probs = SimulatorResultTwo[asc.PosConstriant - 1][asc.NegConstriant - 1];
+    }
+    else if (asc.PosConstriant != 0)
+    {
+        asc.Probs = SimulatorResultOnePos[asc.PosConstriant - 1];
+    }
+    else // if (asc.NegConstriant != 0)
+    {
+        asc.Probs = SimulatorResultOneNeg[asc.NegConstriant - 1];
     }
 
     return true;

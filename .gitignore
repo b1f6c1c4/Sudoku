@@ -22,5 +22,6 @@ ipch
 *.bak
 
 *~
+*.bin
 
 /packages/
