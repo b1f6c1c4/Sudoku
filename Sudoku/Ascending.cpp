@@ -28,7 +28,7 @@ bool Ascending::Set(int ref, int value)
 
     std::remove_if(Solutions.begin(), Solutions.end(), [ref, value](auto &arr)
                    {
-                       return arr[ref] == value;
+                       return arr[ref] != value;
                    });
     if (Solutions.empty())
         return false;
@@ -271,26 +271,66 @@ bool Grid::Update(Cover &cover, Ascending &asc)
     if (!asc.Valid)
         return false;
 
-    if (cover.Number == 9)
-        asc.Done = true;
-
     if (asc.Done)
         return true;
+
+    if (cover.Number == 9)
+    {
+        if (asc.PosConstriant != 0)
+        {
+            auto val = 0;
+            auto lv = 0;
+
+            for (auto i = 0; i < N; i++)
+                if (Get(cover.Ref[i]) > val)
+                {
+                    lv++;
+                    val = Get(cover.Ref[i]);
+                }
+
+            if (lv != asc.PosConstriant)
+                return asc.Valid = false;
+        }
+
+        if (asc.NegConstriant != 0)
+        {
+            auto val = 0;
+            auto rv = 0;
+
+            for (auto i = N - 1; i >= 0; i--)
+                if (Get(cover.Ref[i]) > val)
+                {
+                    rv++;
+                    val = Get(cover.Ref[i]);
+                }
+
+            if (rv != asc.NegConstriant)
+                return asc.Valid = false;
+        }
+
+        return asc.Done = true;
+    }
 
     if (!asc.Solutions.empty())
         return true;
 
-    asc.HasProbs = true;
-
     // 6! = 720, enumerate
     if (cover.Number >= N - 6)
     {
+        asc.HasProbs = true;
+
         Fill(cover, asc);
 
         if (asc.Solutions.empty())
             return asc.Valid = false;
+
+        return true;
     }
-    else if (asc.PosConstriant != 0 && asc.NegConstriant != 0)
+
+    if (asc.HasProbs)
+        return true;
+
+    if (asc.PosConstriant != 0 && asc.NegConstriant != 0)
     {
         asc.Probs = SimulatorResultTwo[asc.PosConstriant - 1][asc.NegConstriant - 1];
     }

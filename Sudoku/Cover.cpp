@@ -105,6 +105,9 @@ bool Grid::FullSimplify()
             return false;
     }
 
+    if (IsDone())
+        return true;
+
     arrNN<size_t> rowA = {{0}};
     arrNN<size_t> colA = {{0}};
     for (auto i = 0; i < N; i++)
@@ -139,6 +142,7 @@ bool Grid::FullSimplify()
             if (m_Number[j][i] == N)
                 return false;
 
+            auto flag = false;
             for (auto k = 0; k < N; k++)
             {
                 if (m_Filled[j][i][k])
@@ -168,7 +172,10 @@ bool Grid::FullSimplify()
                     bestV = k + 1;
                     bestP = prob;
                 }
+
+                flag = true;
             }
+            ASSERT(flag);
         }
 
     ASSERT(bestV != 0);

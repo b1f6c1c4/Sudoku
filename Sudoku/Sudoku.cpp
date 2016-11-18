@@ -39,7 +39,7 @@ int main()
         g = Searcher::Search(g);
 
         if (g == nullptr)
-            std::cout << "Invalid grid.";
+            std::cout << "Invalid grid." << std::endl;
         else
         {
             std::cout << i << ">(table)" << std::endl;
