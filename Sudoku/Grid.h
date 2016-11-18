@@ -87,6 +87,8 @@ private:
     bool Set(int p, num_t value);
     bool Set(int x, int y, num_t value);
 
+    bool EstimateProbs();
+
     bool ReduceInf();
     bool Reduce();
     bool Reduce(int p);

@@ -108,6 +108,11 @@ bool Grid::FullSimplify()
     if (IsDone())
         return true;
 
+    return EstimateProbs();
+}
+
+bool Grid::EstimateProbs()
+{
     arrNN<size_t> rowA = {{0}};
     arrNN<size_t> colA = {{0}};
     for (auto i = 0; i < N; i++)

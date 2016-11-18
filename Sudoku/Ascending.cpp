@@ -311,8 +311,7 @@ bool Grid::Update(Cover &cover, Ascending &asc)
     if (!asc.Solutions.empty())
         return true;
 
-    // 6! = 720, enumerate
-    if (cover.Number >= N - 6)
+    if (cover.Number >= N - 5)
     {
         asc.HasProbs = true;
 
