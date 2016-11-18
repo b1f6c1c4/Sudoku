@@ -7,17 +7,17 @@
 int main()
 {
     {
-        std::ifstream fin("data1p.bin", std::ios::in | std::ios::binary);
+        std::ifstream fin("data1p.bin", std::ios::in | std::ios::binary | std::ios::_Nocreate);
         fin.read(reinterpret_cast<char *>(SimulatorResultOnePos.data()->data()->data()), sizeof(size_t) * N * N * N);
         fin.close();
     }
     {
-        std::ifstream fin("data1n.bin", std::ios::in | std::ios::binary);
+        std::ifstream fin("data1n.bin", std::ios::in | std::ios::binary | std::ios::_Nocreate);
         fin.read(reinterpret_cast<char *>(SimulatorResultOneNeg.data()->data()->data()), sizeof(size_t) * N * N * N);
         fin.close();
     }
     {
-        std::ifstream fin("data2.bin", std::ios::in | std::ios::binary);
+        std::ifstream fin("data2.bin", std::ios::in | std::ios::binary | std::ios::_Nocreate);
         fin.read(reinterpret_cast<char *>(SimulatorResultTwo.data()->data()->data()->data()), sizeof(size_t) * N * N * N * N);
         fin.close();
     }

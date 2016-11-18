@@ -5,7 +5,7 @@ arrN<arrNN<size_t>> SimulatorResultOnePos;
 arrN<arrNN<size_t>> SimulatorResultOneNeg;
 arrNN<arrNN<size_t>> SimulatorResultTwo;
 
-Ascending::Ascending() : PosConstriant(0), NegConstriant(0), Val{0}, Valid(true), Done(true) { }
+Ascending::Ascending() : PosConstriant(0), NegConstriant(0), Val{0}, Valid(true), Done(true), HasProbs(false) { }
 
 void Ascending::Init()
 {
@@ -236,10 +236,13 @@ void Grid::Fill(Cover &cover, Ascending &asc)
                    auto c = 0;
                    for (auto i = 0; i < N; i++)
                        if (sol[i] > v)
+                       {
                            if (++c > asc.PosConstriant)
-                               return true;
+                               return false;
+                           v = sol[i];
+                       }
                    if (c != asc.PosConstriant)
-                       return true;
+                       return false;
                }
 
                if (asc.NegConstriant != 0)
@@ -248,13 +251,16 @@ void Grid::Fill(Cover &cover, Ascending &asc)
                    auto c = 0;
                    for (auto i = N - 1; i >= 0; i--)
                        if (sol[i] > v)
+                       {
                            if (++c > asc.NegConstriant)
-                               return true;
+                               return false;
+                           v = sol[i];
+                       }
                    if (c != asc.NegConstriant)
-                       return true;
+                       return false;
                }
 
-               return false;
+               return true;
            });
 
     asc.UpdateProbs();
@@ -273,6 +279,8 @@ bool Grid::Update(Cover &cover, Ascending &asc)
 
     if (!asc.Solutions.empty())
         return true;
+
+    asc.HasProbs = true;
 
     // 6! = 720, enumerate
     if (cover.Number >= N - 6)

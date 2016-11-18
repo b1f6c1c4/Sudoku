@@ -83,7 +83,7 @@ void RandomShuffle(arrN_t &arr)
     std::shuffle(arr.begin(), arr.end(), random);
 }
 
-void Write(arrN_t &arr, arrNN<size_t> res)
+void Write(arrN_t &arr, arrNN<size_t> &res)
 {
     for (auto i = 0; i < N; i++)
         res[arr[i]][i]++;

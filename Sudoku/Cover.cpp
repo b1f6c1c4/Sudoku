@@ -125,7 +125,7 @@ bool Grid::FullSimplify()
     }
 
     int bestX, bestY;
-    num_t bestV;
+    num_t bestV = 0;
     auto bestP = 0.0;
 
     m_Probs = std::make_unique<arrNN<arrN<double>>>();
@@ -135,6 +135,9 @@ bool Grid::FullSimplify()
         {
             if (m_Data[j][i] != 0)
                 continue;
+
+            if (m_Number[j][i] == N)
+                return false;
 
             for (auto k = 0; k < N; k++)
             {
@@ -168,6 +171,8 @@ bool Grid::FullSimplify()
             }
         }
 
+    ASSERT(bestV != 0);
+
     m_Suggested = std::make_tuple(bestX, bestY, bestV);
 
     return true;
@@ -194,7 +199,7 @@ bool Grid::Invalidate(int x, int y, num_t value)
     if (!m_Valid)
         return false;
 
-    if (!m_Filled[y][x][value - 1])
+    if (m_Filled[y][x][value - 1])
         return true;
 
     m_Dirty = true;
@@ -261,10 +266,10 @@ bool Grid::Reduce(int x, int y)
     if (m_Data[y][x] != 0)
         return true;
 
-    if (!m_RowA[y].Solutions.empty())
+    if (m_RowA[y].HasProbs)
         for (auto i = 0; i < N; i++)
             m_Filled[y][x][i] |= m_RowA[y].Probs[x][i] == 0;
-    if (!m_ColA[y].Solutions.empty())
+    if (m_ColA[x].HasProbs)
         for (auto i = 0; i < N; i++)
             m_Filled[y][x][i] |= m_ColA[x].Probs[y][i] == 0;
 
@@ -306,6 +311,11 @@ bool Grid::IsValid() const
 bool Grid::IsDone() const
 {
     return m_Done == N * N;
+}
+
+int Grid::GetDone() const
+{
+    return m_Done;
 }
 
 bool Grid::Apply(std::tuple<int, int, num_t> sugg)

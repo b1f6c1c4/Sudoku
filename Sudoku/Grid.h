@@ -30,6 +30,7 @@ struct Ascending
     bool Valid;
     bool Done;
 
+    bool HasProbs;
     arrNN<size_t> Probs;
     std::vector<arrN_t> Solutions;
 
@@ -58,6 +59,7 @@ public:
 
     bool IsValid() const;
     bool IsDone() const;
+    int GetDone() const;
 
     bool Apply(std::tuple<int, int, num_t> sugg);
     bool Invalidate(std::tuple<int, int, num_t> sugg);
