@@ -46,6 +46,8 @@ public:
 
     bool LoadGrid(std::istream &is);
     bool LoadAscendings(std::istream &is);
+    void WriteGrid(std::ostream &os) const;
+    void WriteAscendings(std::ostream &os) const;
 
     int Get(int p) const;
     int Get(int x, int y) const;
@@ -98,5 +100,3 @@ private:
     bool Update(Cover &cover, Ascending &asc);
     void Fill(Cover &cover, Ascending &asc);
 };
-
-std::ostream &operator<<(std::ostream &os, const Grid &grid);

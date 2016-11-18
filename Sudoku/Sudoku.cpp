@@ -22,50 +22,31 @@ int main()
         fin.close();
     }
 
+    auto i = 1;
     while (true)
     {
         auto g = std::make_shared<Grid>();
 
-
-#ifdef _DEBUG
-        auto ss = std::stringstream(R"(
-1>(table)
-0  7  4  1  0  0  0  0  0  
-5  2  0  6  0  0  0  0  0  
-1  0  8  5  0  9  0  7  4  
-7  6  0  4  0  0  0  0  2  
-0  5  0  0  6  0  0  3  0  
-4  8  3  0  5  0  0  6  1  
-0  0  0  8  1  7  0  0  5  
-8  9  5  0  0  6  0  1  0  
-2  0  0  0  0  0  0  0  0  
-1>(floor)(以下四行分别是左右上下四方向的楼层数）
-4  2  4  0  1  3  5  0  3  
-1  0  3  3  2  4  2  2  0  
-3  0  2  0  0  3  3  3  1  
-0  2  0  0  1  5  2  0  4  
-)");
         std::string str;
-        ss >> str;
-        g->LoadGrid(ss);
-        ss >> str;
-        g->LoadAscendings(ss);
-#else
+        std::cin >> str;
+        if (str.empty())
+            return 0;
+
         g->LoadGrid(std::cin);
+        std::cin >> str;
         g->LoadAscendings(std::cin);
-#endif
 
         g = Searcher::Search(g);
 
         if (g == nullptr)
             std::cout << "Invalid grid.";
         else
-            std::cout << *g;
-
-#ifdef _DEBUG
-        break;
-#endif
+        {
+            std::cout << i << ">(table)" << std::endl;
+            g->WriteGrid(std::cout);
+            std::cout << i << ">(floor)" << std::endl;
+            g->WriteAscendings(std::cout);
+        }
+        i++;
     }
-    system("pause");
-    return 0;
 }

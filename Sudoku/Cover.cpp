@@ -385,15 +385,3 @@ bool Grid::Set(Cover &cover, int ref, int value)
 
     return true;
 }
-
-std::ostream &operator<<(std::ostream &os, const Grid &grid)
-{
-    ASSERT(grid.IsValid());
-    for (auto i = 0; i < N; i++)
-    {
-        for (auto j = 0; j < N; j++)
-            os << grid.Get(j, i) << "  ";
-        os << std::endl;
-    }
-    return os;
-}

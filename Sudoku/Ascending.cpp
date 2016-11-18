@@ -30,6 +30,8 @@ bool Ascending::Set(int ref, int value)
                    {
                        return arr[ref] == value;
                    });
+    if (Solutions.empty())
+        return false;
 
     UpdateProbs();
 
@@ -69,6 +71,63 @@ bool Grid::LoadAscendings(std::istream &is)
             return false;
 
     return true;
+}
+
+void Grid::WriteGrid(std::ostream &os) const
+{
+    ASSERT(m_Valid);
+    for (auto i = 0; i < N; i++)
+    {
+        for (auto j = 0; j < N; j++)
+            os << m_Data[i][j] << "  ";
+        os << std::endl;
+    }
+}
+
+void Grid::WriteAscendings(std::ostream &os) const
+{
+    auto LCre = [this](const Cover &cover)
+    {
+        auto val = 0;
+        auto lv = 0;
+
+        for (auto i = 0; i < N; i++)
+            if (Get(cover.Ref[i]) > val)
+            {
+                lv++;
+                val = Get(cover.Ref[i]);
+            }
+
+        return lv;
+    };
+
+    auto RCre = [this](const Cover &cover)
+    {
+        auto val = 0;
+        auto rv = 0;
+
+        for (auto i = N - 1; i >= 0; i--)
+            if (Get(cover.Ref[i]) > val)
+            {
+                rv++;
+                val = Get(cover.Ref[i]);
+            }
+
+        return rv;
+    };
+
+    for (auto i = 0; i < N; i++)
+        os << LCre(m_Rows[i]) << "  ";
+    os << std::endl;
+    for (auto i = 0; i < N; i++)
+        os << RCre(m_Rows[i]) << "  ";
+    os << std::endl;
+    for (auto i = 0; i < N; i++)
+        os << LCre(m_Cols[i]) << "  ";
+    os << std::endl;
+    for (auto i = 0; i < N; i++)
+        os << RCre(m_Cols[i]) << "  ";
+    os << std::endl;
 }
 
 bool Grid::Init(Cover &cover, Ascending &asc)
