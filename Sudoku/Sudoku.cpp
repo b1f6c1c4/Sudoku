@@ -25,34 +25,39 @@ int main()
     {
         Grid g;
 
-#ifdef _DEBUG
-        auto ss = std::stringstream(R"(1  4  0  6  0  7  0  2  9  
-0  2  0  0  4  8  0  3  7  
-0  0  0  0  0  0  0  4  6  
-4  1  6  0  5  9  0  7  2  
-8  7  0  4  1  3  6  9  0  
-5  0  3  7  0  0  4  0  0  
-0  0  0  3  0  4  9  0  8  
-0  3  8  0  0  0  2  5  0  
-0  0  0  0  0  5  0  0  0  
 
-7  2  3  4  2  2  4  3  1  
-1  3  2  3  2  3  2  4  4  
-4  3  2  3  3  3  2  5  1  
-1  2  3  2  2  3  2  5  4  
+#ifdef _DEBUG
+        auto ss = std::stringstream(R"(
+1>(table)
+1  0  0  0  0  0  0  4  9  
+0  4  0  1  3  6  2  7  0  
+0  7  0  0  0  9  0  1  0  
+0  0  2  7  0  0  9  0  4  
+9  0  0  0  0  0  0  0  0  
+7  0  8  0  9  0  0  0  0  
+5  2  0  9  0  0  0  0  3  
+0  0  0  4  2  1  5  9  7  
+0  0  0  0  0  0  0  0  0  
+1>(floor)(以下四行分别是左右上下四方向的楼层数）
+0  0  4  4  0  3  2  3  2  
+1  3  2  2  2  3  0  0  5  
+3  4  0  3  2  3  2  4  0  
+4  0  3  0  2  0  3  2  0  
 )");
+        std::string str;
+        ss >> str;
         g.LoadGrid(ss);
+        ss >> str;
         g.LoadAscendings(ss);
 #else
         g.LoadGrid(std::cin);
         g.LoadAscendings(std::cin);
 #endif
 
-        g.Reduce();
-        g.Update();
-        g.Reduce();
-
-        std::cout << g;
+        if (g.FullSimplify())
+            std::cout << g;
+        else
+            std::cout << "Invalid grid.";
 #ifdef _DEBUG
         break;
 #endif

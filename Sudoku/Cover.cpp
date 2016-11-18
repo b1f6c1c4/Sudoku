@@ -3,7 +3,7 @@
 
 Cover::Cover() : Number(0), Filled{false}, Valid(true) { }
 
-Grid::Grid() : m_Data{0}, m_Valid(true)
+Grid::Grid() : m_Data{0}, m_Number{0}, m_Filled{{false}}, m_Dirty(false), m_Valid(true)
 {
     for (auto i = 0; i < N; i++)
         for (auto j = 0; j < N; j++)
@@ -63,6 +63,13 @@ bool Grid::Set(int x, int y, num_t value)
     else
         return m_Valid = false;
 
+    ASSERT(!m_Filled[y][x][value - 1]);
+    m_Filled[y][x][value - 1] = true;
+    ASSERT(m_Number[y][x] != N);
+    m_Number[y][x]++;
+
+    m_Dirty = true;
+
     if (!Set(m_Rows[y], x, value))
         return m_Valid = false;
     if (!Set(m_Cols[x], y, value))
@@ -78,8 +85,34 @@ bool Grid::Set(int x, int y, num_t value)
     return true;
 }
 
+bool Grid::FullSimplify()
+{
+    if (!ReduceInf())
+        return false;
+
+    if (!Update())
+        return false;
+
+    if (!ReduceInf())
+        return false;
+
+    // TODO: calculate probs
+
+    return true;
+}
+
+bool Grid::ReduceInf()
+{
+    do
+        if (!Reduce())
+            return false;
+    while (m_Dirty);
+    return true;
+}
+
 bool Grid::Reduce()
 {
+    m_Dirty = false;
     for (auto i = 0; i < N * N; i++)
         if (!Reduce(i))
             return false;
@@ -99,31 +132,25 @@ bool Grid::Reduce(int x, int y)
     if (m_Data[y][x] != 0)
         return true;
 
-    bool filled[N] = {false};
-    for (auto i = 0; i < N; i++)
-        filled[i] |= m_Rows[y].Filled[i];
-    for (auto i = 0; i < N; i++)
-        filled[i] |= m_Cols[x].Filled[i];
-    for (auto i = 0; i < N; i++)
-        filled[i] |= m_Blks[y / M][x / M].Filled[i];
-
     if (!m_RowA[y].Solutions.empty())
         for (auto i = 0; i < N; i++)
-            filled[i] |= m_RowA[y].Probs[x][i] == 0;
+            m_Filled[y][x][i] |= m_RowA[y].Probs[x][i] == 0;
     if (!m_ColA[y].Solutions.empty())
         for (auto i = 0; i < N; i++)
-            filled[i] |= m_ColA[y].Probs[x][i] == 0;
+            m_Filled[y][x][i] |= m_ColA[y].Probs[x][i] == 0;
 
     auto number = 0;
     for (auto i = 0; i < N; i++)
-        if (filled[i])
+        if (m_Filled[y][x][i])
             number++;
+
+    m_Number[y][x] = number;
 
     if (number == N - 1)
     {
         auto flag = false;
         for (auto i = 0; i < N; i++)
-            if (!filled[i])
+            if (!m_Filled[y][x][i])
             {
                 ASSERT(!flag);
                 flag = true;

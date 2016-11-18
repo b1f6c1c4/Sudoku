@@ -51,11 +51,7 @@ public:
     bool Set(int p, num_t value);
     bool Set(int x, int y, num_t value);
 
-    bool Reduce();
-    bool Reduce(int p);
-    bool Reduce(int x, int y);
-
-    bool Update();
+    bool FullSimplify();
 
     bool IsValid() const;
 
@@ -69,7 +65,19 @@ private:
     arrN<Ascending> m_RowA;
     arrN<Ascending> m_ColA;
 
+    arrNN<int> m_Number;
+    arrNN<arrN<bool>> m_Filled;
+    std::unique_ptr<arrNN<arrN<double>>> m_Probs;
+    bool m_Dirty;
+
     bool m_Valid;
+
+    bool ReduceInf();
+    bool Reduce();
+    bool Reduce(int p);
+    bool Reduce(int x, int y);
+
+    bool Update();
 
     bool Set(Cover &cover, int ref, int value);
 

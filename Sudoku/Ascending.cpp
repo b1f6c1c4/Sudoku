@@ -5,7 +5,7 @@ arrN<arrNN<size_t>> SimulatorResultOnePos;
 arrN<arrNN<size_t>> SimulatorResultOneNeg;
 arrNN<arrNN<size_t>> SimulatorResultTwo;
 
-Ascending::Ascending() : PosConstriant(0), NegConstriant(0), Val{0}, Valid(true), Done(false) { }
+Ascending::Ascending() : PosConstriant(0), NegConstriant(0), Val{0}, Valid(true), Done(true) { }
 
 void Ascending::Init()
 {
@@ -164,7 +164,7 @@ void Grid::Fill(Cover &cover, Ascending &asc)
     for (auto i = 0; i < N; i++)
     {
         state[i] = Get(cover.Ref[i]);
-        if (!cover.Filled[i] && index == N)
+        if (state[i] == 0 && index == N)
             index = i;
     }
 
