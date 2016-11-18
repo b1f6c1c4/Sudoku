@@ -22,6 +22,14 @@ using array1 = std::array<T, P>;
 template <typename T, int Q, int P>
 using array2 = std::array<std::array<T, P>, Q>;
 
+template <typename T>
+using arrN = array1<T, N>;
+
+template <typename T>
+using arrMM = array2<T, M, M>;
+
+typedef arrN<num_t> arrN_t;
+
 #ifdef _DEBUG
 #define ASSERT(x) do { if (!(x)) throw; } while (false)
 #else

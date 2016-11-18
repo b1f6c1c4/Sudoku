@@ -127,7 +127,7 @@ bool Grid::Update()
     return true;
 }
 
-void Fill(array1<bool, N> filled, std::vector<array1<num_t, N>> &solutions, std::array<num_t, N> state, int index, std::function<bool(array1<num_t, N> &)> pred)
+void Fill(arrN<bool> filled, std::vector<arrN_t> &solutions, arrN<num_t> state, int index, std::function<bool(arrN_t &)> pred)
 {
     auto indexX = N;
     for (auto i = index + 1; i < N; i++)
@@ -155,7 +155,7 @@ void Fill(array1<bool, N> filled, std::vector<array1<num_t, N>> &solutions, std:
 
 void Grid::Fill(Cover &cover, Ascending &asc)
 {
-    std::array<num_t, N> state;
+    arrN<num_t> state;
 
     auto index = N;
 

@@ -8,8 +8,8 @@ struct Cover
     Cover();
 
     int Number;
-    array1<bool, N> Filled;
-    array1<int, N> Ref;
+    arrN<bool> Filled;
+    arrN<int> Ref;
 
     bool Valid;
 };
@@ -21,13 +21,13 @@ struct Ascending
     int PosConstriant;
     int NegConstriant;
 
-    array1<num_t, N> Val;
+    arrN_t Val;
 
     bool Valid;
     bool Done;
 
     array2<int,N,N> Probs;
-    std::vector<array1<num_t, N>> Solutions;
+    std::vector<arrN_t> Solutions;
 
     void Init();
     bool Set(int ref, int value);
@@ -58,12 +58,12 @@ public:
 private:
     array2<num_t, N, N> m_Data;
 
-    array1<Cover, N> m_Rows;
-    array1<Cover, N> m_Cols;
-    array2<Cover, M, M> m_Blks;
+    arrN<Cover> m_Rows;
+    arrN<Cover> m_Cols;
+    arrMM<Cover> m_Blks;
 
-    array1<Ascending, N> m_RowA;
-    array1<Ascending, N> m_ColA;
+    arrN<Ascending> m_RowA;
+    arrN<Ascending> m_ColA;
 
     bool m_Valid;
 
