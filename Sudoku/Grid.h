@@ -14,9 +14,9 @@ struct Cover
     bool Valid;
 };
 
-extern array1<array2<size_t, N, N>, N> SimulatorResultOnePos;
-extern array1<array2<size_t, N, N>, N> SimulatorResultOneNeg;
-extern array2<array2<size_t, N, N>, N, N> SimulatorResultTwo;
+extern arrN<arrNN<size_t>> SimulatorResultOnePos;
+extern arrN<arrNN<size_t>> SimulatorResultOneNeg;
+extern arrNN<arrNN<size_t>> SimulatorResultTwo;
 
 struct Ascending
 {
@@ -30,7 +30,7 @@ struct Ascending
     bool Valid;
     bool Done;
 
-    array2<size_t, N, N> Probs;
+    arrNN<size_t> Probs;
     std::vector<arrN_t> Solutions;
 
     void Init();
@@ -60,7 +60,7 @@ public:
     bool IsValid() const;
 
 private:
-    array2<num_t, N, N> m_Data;
+    arrNN<num_t> m_Data;
 
     arrN<Cover> m_Rows;
     arrN<Cover> m_Cols;

@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "Grid.h"
 
-array1<array2<size_t, N, N>, N> SimulatorResultOnePos;
-array1<array2<size_t, N, N>, N> SimulatorResultOneNeg;
-array2<array2<size_t, N, N>, N, N> SimulatorResultTwo;
+arrN<arrNN<size_t>> SimulatorResultOnePos;
+arrN<arrNN<size_t>> SimulatorResultOneNeg;
+arrNN<arrNN<size_t>> SimulatorResultTwo;
 
 Ascending::Ascending() : PosConstriant(0), NegConstriant(0), Val{0}, Valid(true), Done(false) { }
 

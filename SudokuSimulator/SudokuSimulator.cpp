@@ -83,7 +83,7 @@ void RandomShuffle(arrN_t &arr)
     std::shuffle(arr.begin(), arr.end(), random);
 }
 
-void Write(arrN_t &arr, array2<size_t, N, N> res)
+void Write(arrN_t &arr, arrNN<size_t> res)
 {
     for (auto i = 0; i < N; i++)
         res[arr[i]][i]++;
@@ -91,7 +91,7 @@ void Write(arrN_t &arr, array2<size_t, N, N> res)
 
 int main()
 {
-    array2<array2<size_t, N, N>, N, N> result;
+    arrNN<arrNN<size_t>> result;
     memset(result.data()->data()->data()->data(), 0, sizeof(size_t) * N * N * N * N);
 
     arrN_t buff;
@@ -120,7 +120,7 @@ int main()
 
     std::cout << "Done. Writing to file1p..." << std::endl;
 
-    array1<array2<size_t, N, N>, N> result1;
+    arrN<arrNN<size_t>> result1;
     memset(result1.data()->data()->data(), 0, sizeof(size_t) * N * N * N);
     for (auto i = 0; i < N; i++)
         for (auto j = 0; j < N; j++)

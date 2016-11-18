@@ -24,6 +24,9 @@ template <typename T>
 using arrN = array1<T, N>;
 
 template <typename T>
+using arrNN = array2<T, N, N>;
+
+template <typename T>
 using arrMM = array2<T, M, M>;
 
 typedef arrN<num_t> arrN_t;
