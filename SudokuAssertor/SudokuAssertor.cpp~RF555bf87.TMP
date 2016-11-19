@@ -1,0 +1,148 @@
+#pragma once
+
+#define N 9
+
+#include <SDKDDKVer.h>
+#include <stdio.h>
+#include <tchar.h>
+
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <array>
+#include <memory>
+#include <algorithm>
+#include <functional>
+
+#define M 3
+#define N 9
+#include <sstream>
+
+typedef int num_t;
+
+template <typename T, int P>
+using array1 = std::array<T, P>;
+
+template <typename T, int Q, int P>
+using array2 = std::array<std::array<T, P>, Q>;
+
+template <typename T>
+using arrN = array1<T, N>;
+
+template <typename T>
+using arrNN = array2<T, N, N>;
+
+template <typename T>
+using arrMM = array2<T, M, M>;
+
+typedef arrN<num_t> arrN_t;
+
+struct Grid
+{
+    arrNN<num_t> table;
+    array1<arrN<int>, 4> floor;
+};
+
+std::istream &operator>>(std::istream &is, Grid &grid)
+{
+    std::string s;
+    is >> s;
+    for (auto i = 0; i < N; i++)
+        for (auto j = 0; j < N; j++)
+            is >> grid.table[i][j];
+    is >> s;
+    for (auto i = 0; i < 4; i++)
+        for (auto j = 0; j < N; j++)
+            is >> grid.table[i][j];
+
+    return is;
+}
+
+void Validate(const Grid &grid, const Grid &grMask)
+{
+    for (auto i = 0; i < N; i++)
+        for (auto j = 0; j < N; j++)
+        {
+            if (grid.table[i][j] >= 1 && grid.table[i][j] <= 9)
+                continue;
+
+            std::ostringstream ss;
+            ss << "Table not filled: ";
+            ss << "Row " << i + 1 << ", ";
+            ss << "Col " << j + 1 << " ";
+            ss << "got " << grid.table[i][j];
+            throw std::runtime_error(ss.str());
+        }
+
+    for (auto i = 0; i < N; i++)
+    {
+        arrN<bool> filled;
+
+        for (auto j = 0; j < N; j++)
+
+    }
+
+    for (auto i = 0; i < N; i++)
+        for (auto j = 0; j < N; j++)
+        {
+            if (grMask.table[i][j] == 0)
+                continue;
+            if (grid.table[i][j] == grMask.table[i][j])
+                continue;
+
+            std::ostringstream ss;
+            ss << "Table not match: ";
+            ss << "Row " << i + 1 << ", ";
+            ss << "Col " << j + 1 << ", ";
+            ss << "should be " << grMask.table[i][j] << " ";
+            ss << "but got " << grid.table[i][j];
+            throw std::runtime_error(ss.str());
+        }
+
+    for (auto i = 0; i < 4; i++)
+        for (auto j = 0; j < N; j++)
+        {
+            if (grMask.floor[i][j] == 0)
+                continue;
+            if (grid.floor[i][j] == grMask.floor[i][j])
+                continue;
+
+            std::ostringstream ss;
+            ss << "Floor not match: ";
+            switch (i)
+            {
+            case 0:
+                ss << "Row " << j + 1 << " (Left) ";
+                break;
+            case 1:
+                ss << "Row " << j + 1 << " (Right) ";
+                break;
+            case 2:
+                ss << "Col " << j + 1 << " (Top) ";
+                break;
+            case 3:
+                ss << "Col " << j + 1 << " (Bottom) ";
+                break;
+            }
+            ss << "should be " << grMask.floor[i][j] << " ";
+            ss << "but got " << grid.floor[i][j];
+            throw std::runtime_error(ss.str());
+        }
+}
+
+int main()
+{
+    std::string s;
+
+
+    {
+        std::ifstream fin("problem.txt");
+    }
+
+    std::cin >> s;
+
+
+    return 0;
+}
+
