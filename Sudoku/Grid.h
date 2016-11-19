@@ -2,7 +2,7 @@
 #include "stdafx.h"
 
 #define NONE (-1)
-#define WX 16
+#define WX 8
 
 typedef std::tuple<int, int, num_t> sugg_t;
 
@@ -54,7 +54,7 @@ public:
     int Get(int x, int y) const;
 
     bool Simplify();
-    bool FullSimplify();
+    bool FullSimplify(int numSugg = WX);
 
     sugg_t Suggestion() const;
     int SuggestionsLength() const;
@@ -92,7 +92,7 @@ private:
     bool Set(int p, num_t value);
     bool Set(int x, int y, num_t value);
 
-    bool EstimateProbs();
+    bool EstimateProbs(int numSugg);
 
     bool Reduce();
     bool Reduce(int p);

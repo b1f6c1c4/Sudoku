@@ -13,7 +13,7 @@ std::shared_ptr<Grid> Searcher::Search(std::shared_ptr<Grid> grid, int depth)
 {
     while (true)
     {
-        if (!grid->FullSimplify())
+        if (!grid->FullSimplify(1))
             return nullptr;
 
         if (grid->IsDone())
@@ -52,7 +52,7 @@ std::shared_ptr<Grid> Searcher::WSearch(std::shared_ptr<Grid> grid, int depth)
 
     while (true)
     {
-        if (!grid->FullSimplify())
+        if (!grid->FullSimplify(WX))
             return nullptr;
 
         if (grid->IsDone())
@@ -64,7 +64,7 @@ std::shared_ptr<Grid> Searcher::WSearch(std::shared_ptr<Grid> grid, int depth)
         {
             auto gr = std::make_shared<Grid>(*grid);
             auto sugg = grid->Suggestions()[i].first;
-            if (!gr->Apply(sugg))
+            if (!gr->Apply(sugg) || !gr->Simplify())
             {
 #ifdef _DEBUG
                 LOG << SUGG << " die imme" << std::endl;
@@ -72,20 +72,10 @@ std::shared_ptr<Grid> Searcher::WSearch(std::shared_ptr<Grid> grid, int depth)
                 badSuggs.push_back(sugg);
                 continue;
             }
-            if (!gr->Simplify())
-            {
-#ifdef _DEBUG
-                LOG << SUGG << " die imme" << std::endl;
-#endif
-                badSuggs.push_back(sugg);
-                continue;
-            }
-#ifdef _DEBUG
-            LOG << SUGG << " queued" << std::endl;
-#endif
+
             if (gr->IsDone())
             {
-                if (!gr->FullSimplify())
+                if (!gr->FullSimplify(WX))
                 {
 #ifdef _DEBUG
                     LOG << SUGG << " die imme" << std::endl;
@@ -99,6 +89,10 @@ std::shared_ptr<Grid> Searcher::WSearch(std::shared_ptr<Grid> grid, int depth)
 #endif
                 return gr;
             }
+
+#ifdef _DEBUG
+            LOG << SUGG << " queued" << std::endl;
+#endif
             grs.push_back(std::make_pair(gr, sugg));
         }
         std::sort(grs.begin(), grs.end(), [](std::pair<std::shared_ptr<Grid>, sugg_t> lhs, std::pair<std::shared_ptr<Grid>, sugg_t> rhs)
@@ -120,10 +114,15 @@ std::shared_ptr<Grid> Searcher::WSearch(std::shared_ptr<Grid> grid, int depth)
             auto gr = grs[i].first;
             auto sugg = grs[i].second;
 
+            auto flag = false;
             for (auto it = badSuggs.begin(); it != badSuggs.end(); ++it)
-                gr->Invalidate(*it);
+                if (!gr->Invalidate(*it))
+                {
+                    flag = true;
+                    break;
+                }
 
-            if (!gr->FullSimplify())
+            if (flag || !gr->FullSimplify(WX))
             {
 #ifdef _DEBUG
                 LOG << SUGG << " die" << std::endl;
@@ -152,6 +151,16 @@ std::shared_ptr<Grid> Searcher::WSearch(std::shared_ptr<Grid> grid, int depth)
         }
 
         for (auto it = badSuggs.begin(); it != badSuggs.end(); ++it)
-            grid->Invalidate(*it);
+            if (!grid->Invalidate(*it))
+            {
+#ifdef _DEBUG
+                LOG << " die" << std::endl;
+#endif
+                return nullptr;
+            }
+
+#ifdef _DEBUG
+        LOG << "============" << std::endl;
+#endif
     }
 }

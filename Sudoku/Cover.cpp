@@ -83,7 +83,7 @@ bool Grid::Set(int x, int y, num_t value)
     return true;
 }
 
-bool Grid::FullSimplify()
+bool Grid::FullSimplify(int numSugg)
 {
     if (!Simplify())
         return false;
@@ -106,7 +106,7 @@ bool Grid::FullSimplify()
     if (IsDone())
         return true;
 
-    return EstimateProbs();
+    return EstimateProbs(numSugg);
 }
 
 sugg_t Grid::Suggestion() const
@@ -127,12 +127,12 @@ int Grid::SuggestionsLength() const
     return m_SuggestionsLength;
 }
 
-const array1<std::pair<sugg_t, double>, 16> &Grid::Suggestions() const
+const array1<std::pair<sugg_t, double>, WX> &Grid::Suggestions() const
 {
     return m_Suggestions;
 }
 
-bool Grid::EstimateProbs()
+bool Grid::EstimateProbs(int numSugg)
 {
     arrNN<size_t> rowA = {{0}};
     arrNN<size_t> colA = {{0}};
@@ -224,14 +224,14 @@ bool Grid::EstimateProbs()
                 if (id != lng)
                 {
                     auto n = lng - id;
-                    if (lng == WX)
+                    if (lng == numSugg)
                         n--;
                     memmove(reinterpret_cast<void *>(m_Suggestions.data() + id + 1), reinterpret_cast<void *>(m_Suggestions.data() + id), sizeof(*m_Suggestions.data()) * n);
                     m_Suggestions[id] = std::make_pair(std::make_tuple(i, j, k + 1), prob);
-                    if (lng != WX)
+                    if (lng != numSugg)
                         lng++;
                 }
-                else if (lng != WX)
+                else if (lng != numSugg)
                 {
                     m_Suggestions[id] = std::make_pair(std::make_tuple(i, j, k + 1), prob);
                     lng++;
