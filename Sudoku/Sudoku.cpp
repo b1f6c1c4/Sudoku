@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
         std::cin >> str;
         g->LoadAscendings(std::cin);
 
-        g = Searcher::WSearch(g);
+        g = Searcher::Search(g);
 
         if (g == nullptr)
         {
