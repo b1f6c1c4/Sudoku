@@ -96,6 +96,7 @@ namespace Scheduler
 
             var ps = GetProblemList(problem);
             var tims = new List<int>();
+            var tmos = 0;
             var errs = 0;
             File.Delete("problem.txt");
             for (var i = 0; i < ps.Count; i++)
@@ -109,12 +110,12 @@ namespace Scheduler
                 }
                 catch (TimeoutException)
                 {
-                    // ignore
+                    tmos++;
                 }
                 catch (ApplicationException e)
                 {
                     errs++;
-                    Console.Error.WriteLine(e);
+                    Console.Error.WriteLine(e.Message);
                 }
                 Console.Write("\r");
             }
@@ -122,10 +123,18 @@ namespace Scheduler
             if (problem == "problem.txt")
                 File.WriteAllLines(problem, ps);
 
-            Console.WriteLine("SUMMARY:");
-            Console.WriteLine($"Accepted: {(double)tims.Count / ps.Count:P2}");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("======== SUMMARY ========");
+            Console.ForegroundColor = tmos == 0 ? ConsoleColor.Green : ConsoleColor.Red;
+            Console.WriteLine($"Timeout : {(double)tmos / ps.Count:P2}");
+            Console.ForegroundColor = errs == 0 ? ConsoleColor.Green : ConsoleColor.Red;
             Console.WriteLine($"Error   : {(double)errs / ps.Count:P2}");
-            Console.WriteLine($"Average : {tims.Average() / 1000.0:F3}ms");
+            Console.ForegroundColor = tims.Count == ps.Count ? ConsoleColor.Green : ConsoleColor.Red;
+            Console.WriteLine($"Accepted: {(double)tims.Count / ps.Count:P2}");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            if (tims.Any())
+                Console.WriteLine($"Average : {tims.Average() / 1000.0:F3}ms");
+            Console.ResetColor();
         }
 
         private static int Run(string problem, string solver, string assertor)
