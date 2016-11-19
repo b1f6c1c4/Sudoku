@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SudokuSimulator", "SudokuSi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SudokuAssertor", "SudokuAssertor\SudokuAssertor.vcxproj", "{64E4F2D2-51D9-48D6-8920-0DF9A9332B18}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler", "Scheduler\Scheduler.csproj", "{43BE8480-BECA-49BB-AE97-9C9276AE1C7B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -27,6 +29,10 @@ Global
 		{64E4F2D2-51D9-48D6-8920-0DF9A9332B18}.Debug|x64.Build.0 = Debug|x64
 		{64E4F2D2-51D9-48D6-8920-0DF9A9332B18}.Release|x64.ActiveCfg = Release|x64
 		{64E4F2D2-51D9-48D6-8920-0DF9A9332B18}.Release|x64.Build.0 = Release|x64
+		{43BE8480-BECA-49BB-AE97-9C9276AE1C7B}.Debug|x64.ActiveCfg = Debug|x64
+		{43BE8480-BECA-49BB-AE97-9C9276AE1C7B}.Debug|x64.Build.0 = Debug|x64
+		{43BE8480-BECA-49BB-AE97-9C9276AE1C7B}.Release|x64.ActiveCfg = Release|x64
+		{43BE8480-BECA-49BB-AE97-9C9276AE1C7B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
