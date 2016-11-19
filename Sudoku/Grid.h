@@ -2,6 +2,9 @@
 #include "stdafx.h"
 
 #define NONE (-1)
+#define WX 16
+
+typedef std::tuple<int, int, num_t> sugg_t;
 
 struct Cover
 {
@@ -50,16 +53,19 @@ public:
     int Get(int p) const;
     int Get(int x, int y) const;
 
+    bool Simplify();
     bool FullSimplify();
 
-    std::tuple<int, int, num_t> Suggestion() const;
+    sugg_t Suggestion() const;
+    int SuggestionsLength() const;
+    const array1<std::pair<sugg_t, double>, WX> &Suggestions() const;
 
     bool IsValid() const;
     bool IsDone() const;
     int GetDone() const;
 
-    bool Apply(std::tuple<int, int, num_t> sugg);
-    bool Invalidate(std::tuple<int, int, num_t> sugg);
+    bool Apply(sugg_t sugg);
+    bool Invalidate(sugg_t sugg);
 private:
     arrNN<num_t> m_Data;
 
@@ -77,7 +83,8 @@ private:
     bool m_Valid;
     int m_Done;
 
-    std::tuple<int, int, num_t> m_Suggested;
+    int m_SuggestionsLength;
+    array1<std::pair<sugg_t, double>, WX> m_Suggestions;
 
     bool Invalidate(int p, num_t value);
     bool Invalidate(int x, int y, num_t value);
@@ -87,7 +94,6 @@ private:
 
     bool EstimateProbs();
 
-    bool ReduceInf();
     bool Reduce();
     bool Reduce(int p);
     bool Reduce(int x, int y);
@@ -97,6 +103,7 @@ private:
     bool Set(Cover &cover, int ref, int value);
 
     bool Init(Cover &cover, Ascending &asc);
+    bool Check(Cover &cover, Ascending &asc);
     bool Update(Cover &cover, Ascending &asc);
     void Fill(Cover &cover, Ascending &asc);
 };

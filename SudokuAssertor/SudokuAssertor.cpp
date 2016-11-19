@@ -47,11 +47,17 @@ std::istream &operator >>(std::istream &is, Grid &grid)
 {
     std::string s;
     is >> s;
+    if (s.empty())
+        throw std::runtime_error("eof");
+
     for (auto i = 0; i < N; i++)
         for (auto j = 0; j < N; j++)
             is >> grid.table[i][j];
 
     is >> s;
+    if (s.empty())
+        throw std::runtime_error("eof");
+
     for (auto i = 0; i < 4; i++)
         for (auto j = 0; j < N; j++)
             is >> grid.floor[i][j];
@@ -306,8 +312,15 @@ int main()
         Grid grMask;
         while (!fin.eof())
         {
-            fin >> grMask;
-            grids.push_back(grMask);
+            try
+            {
+                fin >> grMask;
+                grids.push_back(grMask);
+            }
+            catch (...)
+            {
+                // ignore
+            }
         }
     }
 
@@ -321,8 +334,17 @@ int main()
         }
         catch (const std::exception &err)
         {
-            std::cerr << grid;
+            std::cerr << "\033[1;31m";
             std::cerr << err.what() << std::endl;
+            std::cerr << "Problem: " << std::endl;
+            std::cerr << grids[i];
+            std::cerr << "Answer (Wrong): " << std::endl;
+            std::cerr << grid;
+            std::cerr << "\033[0m" << std::endl;
+        }
+        catch (...)
+        {
+            // ignore
         }
     }
 

@@ -85,7 +85,7 @@ bool Grid::Set(int x, int y, num_t value)
 
 bool Grid::FullSimplify()
 {
-    if (!ReduceInf())
+    if (!Simplify())
         return false;
 
     while (true)
@@ -99,7 +99,7 @@ bool Grid::FullSimplify()
         if (!m_Dirty)
             break;
 
-        if (!ReduceInf())
+        if (!Simplify())
             return false;
     }
 
@@ -107,6 +107,29 @@ bool Grid::FullSimplify()
         return true;
 
     return EstimateProbs();
+}
+
+sugg_t Grid::Suggestion() const
+{
+    if (!m_Valid)
+        return std::make_tuple(N, N, 0);
+
+    if (m_Done == N * N)
+        return std::make_tuple(0, 0, 0);
+
+    ASSERT(m_SuggestionsLength > 0);
+
+    return m_Suggestions[0].first;
+}
+
+int Grid::SuggestionsLength() const
+{
+    return m_SuggestionsLength;
+}
+
+const array1<std::pair<sugg_t, double>, 16> &Grid::Suggestions() const
+{
+    return m_Suggestions;
 }
 
 bool Grid::EstimateProbs()
@@ -156,9 +179,7 @@ bool Grid::EstimateProbs()
         }
     }
 
-    int bestX, bestY;
-    num_t bestV = 0;
-    auto bestP = 0.0;
+    auto lng = 0;
 
     for (auto j = 0; j < N; j++)
         for (auto i = 0; i < N; i++)
@@ -177,25 +198,43 @@ bool Grid::EstimateProbs()
 
                 auto prob = 1.0;
                 prob /= N - m_Rows[j].Number;
-                prob /= N - m_Cols[j].Number;
+                prob /= N - m_Cols[i].Number;
                 prob /= N - m_Blks[j / M][i / M].Number;
-                if (!m_RowA[i].Done)
+                if (!m_RowA[j].Done)
                 {
-                    prob *= m_RowA[i].Probs[j][k];
-                    prob /= rowA[i][j];
+                    prob *= m_RowA[j].Probs[i][k];
+                    prob /= rowA[j][i];
+                    ASSERT(rowA[j][i] > 0);
                 }
-                if (!m_ColA[j].Done)
+                if (!m_ColA[i].Done)
                 {
-                    prob *= m_ColA[j].Probs[i][k];
-                    prob /= colA[j][i];
+                    prob *= m_ColA[i].Probs[j][k];
+                    prob /= colA[i][j];
+                    ASSERT(colA[i][j] > 0);
                 }
 
-                if (prob > bestP)
+                ASSERT(!isnan(prob));
+                ASSERT(prob > 0);
+
+                auto id = 0;
+                for (; id < lng; id++)
+                    if (prob > m_Suggestions[id].second)
+                        break;
+
+                if (id != lng)
                 {
-                    bestX = i;
-                    bestY = j;
-                    bestV = k + 1;
-                    bestP = prob;
+                    auto n = lng - id;
+                    if (lng == WX)
+                        n--;
+                    memmove(reinterpret_cast<void *>(m_Suggestions.data() + id + 1), reinterpret_cast<void *>(m_Suggestions.data() + id), sizeof(*m_Suggestions.data()) * n);
+                    m_Suggestions[id] = std::make_pair(std::make_tuple(i, j, k + 1), prob);
+                    if (lng != WX)
+                        lng++;
+                }
+                else if (lng != WX)
+                {
+                    m_Suggestions[id] = std::make_pair(std::make_tuple(i, j, k + 1), prob);
+                    lng++;
                 }
 
                 flag = true;
@@ -203,22 +242,10 @@ bool Grid::EstimateProbs()
             ASSERT(flag);
         }
 
-    ASSERT(bestV != 0);
-
-    m_Suggested = std::make_tuple(bestX, bestY, bestV);
+    ASSERT(lng != 0);
+    m_SuggestionsLength = lng;
 
     return true;
-}
-
-std::tuple<int, int, num_t> Grid::Suggestion() const
-{
-    if (!m_Valid)
-        return std::make_tuple(N, N, 0);
-
-    if (m_Done == N * N)
-        return std::make_tuple(0, 0, 0);
-
-    return m_Suggested;
 }
 
 bool Grid::Invalidate(int p, num_t value)
@@ -267,7 +294,7 @@ bool Grid::Invalidate(int x, int y, num_t value)
     return true;
 }
 
-bool Grid::ReduceInf()
+bool Grid::Simplify()
 {
     do
         if (!Reduce())
@@ -350,12 +377,12 @@ int Grid::GetDone() const
     return m_Done;
 }
 
-bool Grid::Apply(std::tuple<int, int, num_t> sugg)
+bool Grid::Apply(sugg_t sugg)
 {
     return Set(std::get<0>(sugg), std::get<1>(sugg), std::get<2>(sugg));
 }
 
-bool Grid::Invalidate(std::tuple<int, int, num_t> sugg)
+bool Grid::Invalidate(sugg_t sugg)
 {
     return Invalidate(std::get<0>(sugg), std::get<1>(sugg), std::get<2>(sugg));
 }

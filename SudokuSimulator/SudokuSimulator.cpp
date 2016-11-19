@@ -5,7 +5,7 @@
 
 int LCre(arrN_t &arr)
 {
-    auto val = 0;
+    auto val = -1;
     auto lv = 0;
 
     for (auto i = 0; i < N; i++)
@@ -20,7 +20,7 @@ int LCre(arrN_t &arr)
 
 int RCre(arrN_t &arr)
 {
-    auto val = 0;
+    auto val = -1;
     auto rv = 0;
 
     for (auto i = N - 1; i >= 0; i--)
@@ -86,7 +86,7 @@ void RandomShuffle(arrN_t &arr)
 void Write(arrN_t &arr, arrNN<size_t> &res)
 {
     for (auto i = 0; i < N; i++)
-        res[arr[i]][i]++;
+        res[i][arr[i]]++;
 }
 
 int main()

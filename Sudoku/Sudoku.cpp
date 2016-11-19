@@ -43,10 +43,16 @@ int main(int argc, char *argv[])
         std::cin >> str;
         g->LoadAscendings(std::cin);
 
-        g = Searcher::Search(g);
+        g = Searcher::WSearch(g);
 
         if (g == nullptr)
-            std::cout << "Invalid grid." << std::endl;
+        {
+            Grid gg;
+            std::cout << i << ">(table)" << std::endl;
+            gg.WriteGrid(std::cout);
+            std::cout << i << ">(floor)" << std::endl;
+            gg.WriteAscendings(std::cout);
+        }
         else
         {
             std::cout << i << ">(table)" << std::endl;
