@@ -118,16 +118,42 @@ bool Grid::EstimateProbs()
         if (m_RowA[i].Done)
             continue;
         for (auto j = 0; j < N; j++)
+        {
+            if (m_Data[i][j] != 0)
+                continue;
+
+            if (m_Number[i][j] == N)
+                return false;
+
             for (auto k = 0; k < N; k++)
+            {
+                if (m_Filled[i][j][k])
+                    continue;
+
                 rowA[i][j] += m_RowA[i].Probs[j][k];
+            }
+        }
     }
     for (auto i = 0; i < N; i++)
     {
         if (m_ColA[i].Done)
             continue;
         for (auto j = 0; j < N; j++)
+        {
+            if (m_Data[j][i] != 0)
+                continue;
+
+            if (m_Number[j][i] == N)
+                return false;
+
             for (auto k = 0; k < N; k++)
+            {
+                if (m_Filled[j][i][k])
+                    continue;
+
                 colA[i][j] += m_ColA[i].Probs[j][k];
+            }
+        }
     }
 
     int bestX, bestY;
